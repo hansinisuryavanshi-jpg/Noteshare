@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NoteShare — BCA Community Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f0f2f8;--bg2:#ffffff;--bg3:#f5f7fc;--bg4:#eaecf4;
+  --border:#dde1ef;--border2:#c8cde0;
+  --text:#1a1f36;--text2:#4a5270;--text3:#8a91b0;
+  --accent:#4a6eff;--accent2:#2f52e8;--accent-bg:#eef1ff;--accent-glow:rgba(74,110,255,0.10);
+  --green:#16a34a;--green-bg:#dcfce7;
+  --amber:#b45309;--amber-bg:#fef3c7;
+  --rose:#dc2626;--rose-bg:#fee2e2;
+  --teal:#0d9488;--teal-bg:#ccfbf1;
+  --purple:#7c3aed;--purple-bg:#ede9fe;
+  --gold:#d97706;
+  --shadow:0 1px 4px rgba(30,40,90,0.07), 0 4px 16px rgba(30,40,90,0.04);
+  --shadow-md:0 2px 8px rgba(30,40,90,0.10), 0 8px 24px rgba(30,40,90,0.06);
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'DM Sans',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ── LAYOUT ── */
+.shell{display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:234px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:relative;overflow:hidden;box-shadow:2px 0 12px rgba(30,40,90,0.05);}
+.sidebar::before{content:'';position:absolute;top:-60px;left:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(74,110,255,0.05) 0%,transparent 70%);pointer-events:none;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+/* ── SIDEBAR ── */
+.logo-wrap{padding:20px 18px 16px;border-bottom:1px solid var(--border);}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-mark{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.logo-text{font-family:var(--serif);font-size:19px;color:var(--text);}
+.logo-text em{font-style:italic;color:var(--accent);}
+.logo-sub{font-size:9px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px;font-family:var(--mono);}
+.nav-scroll{flex:1;overflow-y:auto;padding:12px 8px;}
+.nav-group{margin-bottom:4px;}
+.nav-label{font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;padding:8px 10px 3px;font-family:var(--mono);}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text2);transition:all 0.14s;margin-bottom:1px;user-select:none;}
+.nav-item:hover{background:var(--bg3);color:var(--text);}
+.nav-item.active{background:var(--accent-bg);color:var(--accent);}
+.nav-item .ni{width:15px;text-align:center;flex-shrink:0;font-size:12px;}
+.nbadge{margin-left:auto;background:var(--bg4);color:var(--text3);font-size:9px;padding:1px 5px;border-radius:8px;font-family:var(--mono);}
+.nav-item.active .nbadge{background:rgba(74,110,255,0.15);color:var(--accent);}
+.pro-badge-nav{margin-left:auto;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;font-size:9px;padding:1px 6px;border-radius:8px;font-family:var(--mono);font-weight:600;}
+.sem-row{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:3px 10px;}
+.sem-chip{padding:4px 3px;border-radius:5px;font-size:10px;text-align:center;cursor:pointer;color:var(--text3);border:1px solid var(--border);transition:all 0.14s;font-family:var(--mono);}
+.sem-chip:hover{border-color:var(--border2);color:var(--text2);}
+.sem-chip.active{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);}
+.sidebar-footer{padding:10px 8px;border-top:1px solid var(--border);}
+.user-card{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:9px;cursor:pointer;transition:background 0.14s;}
+.user-card:hover{background:var(--bg3);}
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0;font-family:var(--mono);}
+.av-lg{width:34px;height:34px;font-size:12px;background:var(--accent-bg);color:var(--accent);border:1px solid rgba(74,110,255,0.25);}
+.av-sm{width:22px;height:22px;font-size:9px;background:var(--bg4);color:var(--text2);border:1px solid var(--border);}
+.user-name{font-size:13px;font-weight:500;color:var(--text);}
+.user-meta{font-size:10px;color:var(--text3);font-family:var(--mono);}
+.pts-badge{margin-left:auto;background:rgba(22,163,74,0.1);color:var(--green);font-size:10px;padding:2px 6px;border-radius:8px;font-family:var(--mono);border:1px solid rgba(22,163,74,0.2);}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:11px 22px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 4px rgba(30,40,90,0.05);}
+.search-wrap{flex:1;position:relative;max-width:420px;}
+.si{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;}
+.search-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:8px 12px 8px 33px;font-size:13px;font-family:var(--sans);color:var(--text);outline:none;transition:all 0.18s;}
+.search-input::placeholder{color:var(--text3);}
+.search-input:focus{border-color:var(--accent);background:var(--bg2);box-shadow:0 0 0 3px rgba(74,110,255,0.1);}
+.tbr{display:flex;align-items:center;gap:7px;margin-left:auto;}
+.icon-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all 0.14s;}
+.icon-btn:hover{background:var(--bg3);color:var(--text);}
+.btn{padding:7px 14px;border-radius:8px;font-size:13px;font-family:var(--sans);font-weight:500;cursor:pointer;transition:all 0.14s;border:1px solid var(--border);}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.btn-primary:hover{background:var(--accent2);box-shadow:0 4px 16px rgba(74,110,255,0.25);}
+.btn-ghost{background:transparent;color:var(--text2);border-color:var(--border);}
+.btn-ghost:hover{background:var(--bg3);color:var(--text);}
+.btn-gold{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;border:none;}
+.btn-gold:hover{opacity:0.88;box-shadow:0 4px 16px rgba(245,158,11,0.30);}
+.btn-danger{background:var(--rose-bg);color:var(--rose);border-color:rgba(220,38,38,0.3);}
+.btn-danger:hover{background:#fecaca;}
+
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;padding:24px 26px;}
+.page{display:none;animation:fadeUp 0.18s ease;}
+.page.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.page-headline{font-family:var(--serif);font-size:30px;font-weight:400;color:var(--text);margin-bottom:3px;letter-spacing:-0.4px;}
+.page-headline em{font-style:italic;color:var(--accent);}
+.page-sub{font-size:13px;color:var(--text3);margin-bottom:22px;}
+
+/* ── STATS (bottom bar) ── */
+.stats-bottom-bar{background:var(--bg2);border-top:1px solid var(--border);padding:12px 26px;display:flex;gap:0;box-shadow:0 -2px 8px rgba(30,40,90,0.05);}
+.stat-item{flex:1;display:flex;align-items:center;gap:10px;padding:0 16px;border-right:1px solid var(--border);}
+.stat-item:first-child{padding-left:0;}
+.stat-item:last-child{border-right:none;padding-right:0;}
+.stat-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.stat-icon.blue{background:var(--accent-bg);}
+.stat-icon.green{background:var(--green-bg);}
+.stat-icon.amber{background:var(--amber-bg);}
+.stat-icon.purple{background:var(--purple-bg);}
+.stat-body{}
+.stat-label{font-size:9px;color:var(--text3);font-family:var(--mono);letter-spacing:0.5px;text-transform:uppercase;}
+.stat-value{font-size:17px;font-weight:600;color:var(--text);font-family:var(--mono);letter-spacing:-0.5px;line-height:1.2;}
+.stat-change{font-size:9px;font-family:var(--mono);}
+.stat-change.up{color:var(--green);}
+.stat-change.neutral{color:var(--text3);}
+.stat-prog{margin-top:3px;}
+.stat-prog-track{background:var(--bg4);border-radius:2px;height:2px;width:80px;}
+.stat-prog-fill{height:2px;border-radius:2px;}
+.stat-prog-fill.blue{background:var(--accent);}
+.stat-prog-fill.green{background:var(--green);}
+.stat-prog-fill.amber{background:var(--amber);}
+.stat-prog-fill.purple{background:var(--purple);}
+
+/* ── SECTION ── */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.sec-title{font-size:14px;font-weight:500;color:var(--text);}
+.sec-count{font-size:11px;color:var(--text3);font-family:var(--mono);}
+.view-all{font-size:12px;color:var(--accent);cursor:pointer;transition:opacity 0.14s;}
+.view-all:hover{opacity:0.7;}
+
+/* ── FILTERS ── */
+.filter-row{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap;}
+.fc{padding:4px 11px;border-radius:18px;font-size:12px;cursor:pointer;border:1px solid var(--border);background:var(--bg2);color:var(--text3);transition:all 0.14s;}
+.fc:hover{border-color:var(--border2);color:var(--text2);}
+.fc.active{background:var(--accent-bg);color:var(--accent);border-color:rgba(74,110,255,0.4);}
+.sem-tabs{display:flex;gap:3px;padding:3px;background:var(--bg4);border-radius:9px;width:fit-content;margin-bottom:14px;}
+.stab{padding:4px 14px;border-radius:6px;font-size:11px;cursor:pointer;color:var(--text3);transition:all 0.14s;font-family:var(--mono);}
+.stab.active{background:var(--bg2);color:var(--text);border:1px solid var(--border);box-shadow:var(--shadow);}
+
+/* ── NOTE CARDS ── */
+.notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:12px;}
+.note-card{background:var(--bg2);border:1px solid var(--border);border-radius:13px;padding:15px;cursor:pointer;transition:all 0.18s;position:relative;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);}
+.note-card::before{content:'';position:absolute;inset:0;opacity:0;background:radial-gradient(ellipse at top left,var(--accent-glow),transparent 60%);transition:opacity 0.18s;pointer-events:none;}
+.note-card:hover{border-color:rgba(74,110,255,0.3);transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.note-card:hover::before{opacity:1;}
+.note-tag{display:inline-flex;align-items:center;font-size:10px;font-weight:500;padding:2px 8px;border-radius:5px;margin-bottom:9px;font-family:var(--mono);}
+.t-dbms{background:var(--amber-bg);color:var(--amber);}
+.t-os{background:var(--green-bg);color:var(--green);}
+.t-ds{background:var(--teal-bg);color:var(--teal);}
+.t-cn{background:var(--rose-bg);color:var(--rose);}
+.t-java{background:#fff7ed;color:#c2410c;}
+.t-math{background:var(--purple-bg);color:var(--purple);}
+.t-cs{background:var(--accent-bg);color:var(--accent);}
+.note-title{font-size:13.5px;color:var(--text);margin-bottom:7px;line-height:1.43;flex:1;}
+.star-row{display:flex;align-items:center;gap:5px;margin-bottom:9px;}
+.stars{display:flex;gap:2px;}
+.star{font-size:13px;cursor:pointer;transition:transform 0.1s;user-select:none;}
+.star:hover{transform:scale(1.2);}
+.star.filled{color:var(--gold);}
+.star.empty{color:var(--border2);}
+.rating-count{font-size:10px;color:var(--text3);font-family:var(--mono);}
+.note-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);}
+.note-author{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3);}
+.note-stats{display:flex;gap:8px;font-size:11px;color:var(--text3);font-family:var(--mono);}
+.note-stat{display:flex;align-items:center;gap:2px;cursor:pointer;transition:color 0.14s;}
+.note-stat:hover{color:var(--accent);}
+
+/* Role badges on cards */
+.role-badge{display:inline-flex;align-items:center;gap:3px;font-size:9px;padding:1px 6px;border-radius:4px;font-family:var(--mono);font-weight:600;margin-left:4px;}
+.rb-teacher{background:#fef3c7;color:#92400e;}
+.rb-senior{background:#ede9fe;color:#5b21b6;}
+.rb-student{background:var(--bg4);color:var(--text3);}
+
+/* ── TWO COL ── */
+.two-col{display:grid;grid-template-columns:1fr 290px;gap:16px;}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:13px;padding:16px;box-shadow:var(--shadow);}
+.panel-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:12px;}
+.notif-item{display:flex;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);}
+.notif-item:last-child{border-bottom:none;}
+.nd{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.nd-new{background:var(--accent);}
+.nd-read{background:var(--bg4);}
+.notif-text{font-size:12px;color:var(--text2);line-height:1.5;}
+.notif-time{font-size:10px;color:var(--text3);margin-top:2px;font-family:var(--mono);}
+
+/* ── TRENDING ── */
+.trend-item{background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:13px 15px;display:flex;align-items:center;gap:13px;cursor:pointer;transition:all 0.18s;margin-bottom:8px;box-shadow:var(--shadow);}
+.trend-item:hover{border-color:var(--border2);background:var(--bg3);}
+.trend-rank{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--border2);width:26px;flex-shrink:0;text-align:center;}
+.r1{color:var(--amber)!important;}.r2{color:#9ca3af!important;}.r3{color:#b45309!important;}
+.trend-body{flex:1;min-width:0;}
+.trend-title{font-size:13px;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.trend-meta{font-size:10px;color:var(--text3);font-family:var(--mono);}
+.trend-stars{display:flex;align-items:center;gap:4px;margin-top:3px;}
+.mini-stars{display:flex;gap:1px;font-size:10px;}
+.trend-bar{width:72px;flex-shrink:0;}
+.trend-num{font-size:11px;color:var(--accent);font-family:var(--mono);text-align:right;margin-bottom:3px;}
+.mb-wrap{background:var(--bg4);border-radius:2px;height:3px;}
+.mb-fill{height:3px;border-radius:2px;background:var(--accent);}
+
+/* ── UPLOAD ── */
+.upload-zone{border:2px dashed var(--border2);border-radius:13px;padding:40px 28px;text-align:center;cursor:pointer;transition:all 0.18s;background:var(--bg3);margin-bottom:18px;}
+.upload-zone:hover{border-color:var(--accent);background:var(--accent-bg);}
+.uz-icon{font-size:36px;margin-bottom:10px;}
+.uz-title{font-size:14px;color:var(--text);margin-bottom:3px;font-weight:500;}
+.uz-sub{font-size:11px;color:var(--text3);}
+.form-g{margin-bottom:13px;}
+.lbl{font-size:10px;font-weight:500;color:var(--text3);margin-bottom:5px;display:block;letter-spacing:0.5px;text-transform:uppercase;font-family:var(--mono);}
+.inp,.sel,.txa{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 11px;font-size:13px;font-family:var(--sans);color:var(--text);outline:none;transition:all 0.18s;}
+.inp::placeholder,.txa::placeholder{color:var(--text3);}
+.inp:focus,.sel:focus,.txa:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(74,110,255,0.1);background:var(--bg2);}
+.sel{appearance:none;cursor:pointer;}
+.sel option{background:var(--bg2);}
+.txa{resize:vertical;min-height:72px;}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.subj-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+.subj-btn{padding:7px 3px;border-radius:7px;font-size:10px;font-weight:500;text-align:center;cursor:pointer;border:1px solid var(--border);color:var(--text3);background:var(--bg3);transition:all 0.14s;font-family:var(--mono);}
+.subj-btn:hover{border-color:var(--border2);color:var(--text2);}
+.subj-btn.sel{border-color:var(--accent);color:var(--accent);background:var(--accent-bg);}
+.upload-btn{width:100%;padding:11px;border-radius:9px;background:var(--accent);color:#fff;border:none;font-size:13px;font-family:var(--sans);font-weight:500;cursor:pointer;transition:all 0.18s;}
+.upload-btn:hover{background:var(--accent2);box-shadow:0 5px 20px rgba(74,110,255,0.25);}
+
+/* Role selector */
+.role-selector{display:flex;gap:6px;margin-bottom:14px;}
+.role-opt{flex:1;padding:9px 6px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;text-align:center;transition:all 0.14s;}
+.role-opt:hover{border-color:var(--border2);}
+.role-opt.active{border-color:var(--accent);background:var(--accent-bg);}
+.role-opt-icon{font-size:18px;margin-bottom:3px;}
+.role-opt-name{font-size:11px;font-weight:500;color:var(--text2);font-family:var(--mono);}
+.role-opt.active .role-opt-name{color:var(--accent);}
+
+/* ── LEADERBOARD ── */
+.lb-list{display:flex;flex-direction:column;gap:7px;}
+.lb-item{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:11px;background:var(--bg3);border:1px solid var(--border);transition:all 0.14s;}
+.lb-item:hover{border-color:var(--border2);}
+.lb-item.you{border-color:rgba(74,110,255,0.4);background:var(--accent-bg);}
+.lb-rank{font-family:var(--mono);font-size:14px;font-weight:600;width:24px;text-align:center;flex-shrink:0;}
+.lb-r1{color:var(--amber);}.lb-r2{color:#9ca3af;}.lb-r3{color:#b45309;}.lb-rn{color:var(--text3);}
+.lb-info{flex:1;}
+.lb-name{font-size:12px;font-weight:500;color:var(--text);}
+.lb-sub{font-size:10px;color:var(--text3);font-family:var(--mono);}
+.lb-score{font-size:14px;font-weight:600;color:var(--accent);font-family:var(--mono);}
+.you-badge{font-size:9px;background:var(--accent-bg);color:var(--accent);border:1px solid rgba(74,110,255,0.3);padding:1px 5px;border-radius:4px;margin-left:5px;font-family:var(--mono);}
+.prog-label{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:5px;font-family:var(--mono);}
+.prog-track{background:var(--bg4);border-radius:3px;height:4px;}
+.prog-fill{height:4px;border-radius:3px;background:linear-gradient(90deg,var(--accent2),var(--accent));}
+.mini-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px;}
+.mini-stat{background:var(--bg3);border-radius:8px;padding:9px 11px;text-align:center;border:1px solid var(--border);}
+.mini-stat-val{font-size:18px;font-weight:600;color:var(--text);font-family:var(--mono);}
+.mini-stat-label{font-size:9px;color:var(--text3);margin-top:1px;font-family:var(--mono);}
+
+/* ── ISSUE SYSTEM ── */
+.issue-section{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.issue-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.issue-title{font-size:11px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:5px;}
+.issue-count-badge{font-size:9px;background:var(--rose-bg);color:var(--rose);padding:1px 6px;border-radius:8px;font-family:var(--mono);}
+.issue-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.issue-item{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:10px 12px;transition:all 0.14s;}
+.issue-item:hover{border-color:var(--border2);}
+.issue-item.resolved{border-color:rgba(22,163,74,0.25);background:#f0fdf4;}
+.issue-item.escalated{border-color:rgba(220,38,38,0.25);background:#fff5f5;}
+.issue-meta{display:flex;align-items:center;gap:5px;margin-bottom:4px;}
+.issue-status{font-size:8px;padding:1px 6px;border-radius:5px;font-family:var(--mono);font-weight:600;text-transform:uppercase;}
+.is-open{background:var(--amber-bg);color:var(--amber);}
+.is-ai{background:var(--teal-bg);color:var(--teal);}
+.is-resolved{background:var(--green-bg);color:var(--green);}
+.is-escalated{background:var(--rose-bg);color:var(--rose);}
+.issue-author-time{font-size:9px;color:var(--text3);font-family:var(--mono);margin-left:auto;}
+.issue-text{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:5px;}
+.issue-reply{font-size:11px;color:var(--text3);padding:5px 8px;background:var(--bg2);border-radius:6px;border:1px solid var(--border);line-height:1.4;}
+.issue-reply strong{color:var(--teal);}
+.issue-reply.teacher-reply strong{color:var(--purple);}
+.issue-reply.student-reply strong{color:var(--green);}
+.raise-issue-btn{width:100%;padding:8px;border-radius:8px;border:1px dashed var(--border2);background:transparent;color:var(--text3);font-size:12px;font-family:var(--sans);cursor:pointer;transition:all 0.14s;display:flex;align-items:center;justify-content:center;gap:5px;}
+.raise-issue-btn:hover{border-color:var(--rose);color:var(--rose);background:var(--rose-bg);}
+
+/* ── NOTE READER ── */
+.reader-shell{display:none;position:fixed;inset:0;z-index:150;background:var(--bg);flex-direction:column;}
+.reader-shell.open{display:flex;}
+.reader-topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow);}
+.reader-title{font-size:14px;font-weight:500;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.reader-body{flex:1;display:flex;overflow:hidden;}
+.reader-content{flex:1;overflow-y:auto;padding:40px 60px;max-width:800px;margin:0 auto;width:100%;}
+.reader-content h1{font-family:var(--serif);font-size:28px;color:var(--text);margin-bottom:6px;}
+.reader-content .rmeta{font-size:12px;color:var(--text3);font-family:var(--mono);margin-bottom:28px;display:flex;gap:14px;}
+.reader-content h2{font-size:17px;font-weight:500;color:var(--text);margin:28px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.reader-content h3{font-size:14px;font-weight:500;color:var(--accent);margin:18px 0 7px;}
+.reader-content p{font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:12px;}
+.reader-content ul{margin:10px 0 14px 20px;}
+.reader-content li{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:4px;}
+.reader-content .callout{background:var(--accent-bg);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;}
+.reader-content .callout p{margin:0;color:var(--text);}
+.reader-content code{background:var(--bg4);color:var(--teal);padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:12px;}
+.reader-sidebar{width:280px;flex-shrink:0;background:var(--bg2);border-left:1px solid var(--border);overflow-y:auto;padding:18px;}
+.rs-title{font-size:11px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;font-family:var(--mono);margin-bottom:14px;}
+.toc-item{font-size:12px;color:var(--text2);padding:5px 8px;border-radius:6px;cursor:pointer;transition:all 0.14s;margin-bottom:2px;}
+.toc-item:hover{background:var(--bg3);color:var(--text);}
+.toc-item.h3{padding-left:20px;font-size:11px;color:var(--text3);}
+
+/* ── AI TOOLS BAR ── */
+.ai-tools-bar{background:var(--bg2);border-top:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:8px;box-shadow:0 -1px 4px rgba(30,40,90,0.05);}
+.ai-tool-btn{display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;border:1px solid var(--border);cursor:pointer;font-size:12px;font-family:var(--sans);font-weight:500;transition:all 0.14s;}
+.ai-tool-btn .aico{font-size:15px;}
+.ai-tool-btn.free{background:var(--bg3);color:var(--text2);}
+.ai-tool-btn.free:hover{border-color:var(--border2);color:var(--text);}
+.ai-tool-btn.pro{background:linear-gradient(135deg,rgba(245,158,11,0.1),rgba(239,68,68,0.1));color:var(--amber);border-color:rgba(245,158,11,0.3);}
+.ai-tool-btn.pro:hover{background:linear-gradient(135deg,rgba(245,158,11,0.18),rgba(239,68,68,0.18));}
+.ai-tool-btn .pro-lock{font-size:10px;background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-family:var(--mono);}
+.ai-label{font-size:11px;color:var(--text3);margin-right:4px;}
+
+/* ── AI PANEL ── */
+.ai-panel{position:fixed;right:0;top:0;bottom:0;width:400px;background:var(--bg2);border-left:1px solid var(--border);z-index:160;display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:-4px 0 20px rgba(30,40,90,0.1);}
+.ai-panel.open{transform:translateX(0);}
+.ai-panel-top{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.ai-panel-title{font-size:14px;font-weight:500;color:var(--text);flex:1;}
+.ai-panel-body{flex:1;overflow-y:auto;padding:18px;}
+.ai-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;gap:14px;color:var(--text3);}
+.ai-spinner{width:32px;height:32px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+/* Flashcards */
+.flashcard-wrap{perspective:800px;}
+.flashcard{width:100%;height:160px;position:relative;transform-style:preserve-3d;transition:transform 0.5s;cursor:pointer;margin-bottom:10px;}
+.flashcard.flipped{transform:rotateY(180deg);}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:11px;padding:20px;display:flex;align-items:center;justify-content:center;text-align:center;}
+.fc-front{background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:14px;font-weight:500;}
+.fc-back{background:var(--accent-bg);border:1px solid rgba(74,110,255,0.3);color:var(--text);font-size:13px;line-height:1.6;transform:rotateY(180deg);}
+.fc-hint{font-size:10px;color:var(--text3);text-align:center;margin-bottom:14px;font-family:var(--mono);}
+.fc-nav{display:flex;align-items:center;justify-content:space-between;margin-top:4px;}
+.fc-counter{font-size:11px;color:var(--text3);font-family:var(--mono);}
+/* Short Notes */
+.short-note-section{margin-bottom:18px;}
+.sn-head{font-size:12px;font-weight:600;color:var(--accent);margin-bottom:6px;font-family:var(--mono);text-transform:uppercase;letter-spacing:0.5px;}
+.sn-body{font-size:13px;color:var(--text2);line-height:1.65;}
+.sn-bullet{display:flex;gap:8px;margin-bottom:5px;font-size:13px;color:var(--text2);}
+.sn-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:6px;}
+
+/* ── PRO PAYWALL MODAL ── */
+.paywall-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:300;opacity:0;pointer-events:none;transition:opacity 0.2s;backdrop-filter:blur(6px);}
+.paywall-overlay.open{opacity:1;pointer-events:all;}
+.paywall-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;width:460px;overflow:hidden;position:relative;box-shadow:var(--shadow-md);}
+.paywall-header{padding:28px 28px 0;text-align:center;}
+.paywall-crown{font-size:44px;margin-bottom:10px;}
+.paywall-title{font-family:var(--serif);font-size:26px;color:var(--text);}
+.paywall-title em{font-style:italic;background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.paywall-sub{font-size:13px;color:var(--text3);margin-top:5px;}
+.paywall-plans{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:20px 28px;}
+.plan-card{border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all 0.18s;position:relative;background:var(--bg3);}
+.plan-card:hover{border-color:var(--border2);}
+.plan-card.highlight{border-color:var(--gold);background:rgba(245,158,11,0.04);}
+.plan-popular{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;font-size:9px;font-weight:600;padding:3px 10px;border-radius:10px;font-family:var(--mono);white-space:nowrap;}
+.plan-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.plan-price{font-size:22px;font-weight:700;color:var(--text);font-family:var(--mono);}
+.plan-price span{font-size:12px;font-weight:400;color:var(--text3);}
+.plan-features{margin-top:10px;display:flex;flex-direction:column;gap:5px;}
+.plan-feat{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:5px;}
+.plan-feat::before{content:'✓';color:var(--green);font-size:11px;flex-shrink:0;}
+.paywall-footer{padding:0 28px 24px;display:flex;flex-direction:column;gap:8px;}
+.full-btn{width:100%;padding:12px;border-radius:10px;border:none;font-size:14px;font-family:var(--sans);font-weight:600;cursor:pointer;transition:all 0.18s;letter-spacing:0.2px;}
+.full-btn.gold{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;}
+.full-btn.gold:hover{opacity:0.88;box-shadow:0 6px 20px rgba(245,158,11,0.35);}
+.full-btn.ghost{background:transparent;color:var(--text3);font-size:13px;}
+.paywall-features-list{display:flex;flex-wrap:wrap;gap:6px;padding:0 28px 16px;}
+.pf-chip{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);background:var(--bg3);border:1px solid var(--border);padding:4px 10px;border-radius:20px;}
+.pf-chip .ico{font-size:13px;}
+
+/* ── PRICING ── */
+.pricing-hero{text-align:center;padding:0 0 36px;}
+.pricing-toggle{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:32px;}
+.ptoggle{background:var(--bg4);border-radius:20px;padding:3px;display:flex;}
+.pt-opt{padding:5px 14px;border-radius:16px;font-size:12px;cursor:pointer;color:var(--text3);transition:all 0.15s;font-family:var(--mono);}
+.pt-opt.active{background:var(--bg2);color:var(--text);border:1px solid var(--border);box-shadow:var(--shadow);}
+.save-badge{background:rgba(22,163,74,0.1);color:var(--green);font-size:10px;padding:3px 8px;border-radius:10px;font-family:var(--mono);border:1px solid rgba(22,163,74,0.2);}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:30px;}
+.price-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px;position:relative;transition:all 0.2s;box-shadow:var(--shadow);}
+.price-card:hover{border-color:var(--border2);}
+.price-card.featured{border-color:var(--gold);background:linear-gradient(160deg,rgba(245,158,11,0.04),var(--bg2));}
+.price-card.featured::before{content:'MOST POPULAR';position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;font-size:9px;font-weight:700;padding:3px 12px;border-radius:10px;font-family:var(--mono);white-space:nowrap;}
+.pc-tier{font-size:10px;font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
+.pc-price{font-size:36px;font-weight:700;color:var(--text);font-family:var(--mono);letter-spacing:-1px;margin-bottom:4px;}
+.pc-price.gold-text{background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.pc-period{font-size:12px;color:var(--text3);margin-bottom:18px;}
+.pc-divider{height:1px;background:var(--border);margin-bottom:16px;}
+.pc-features{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.pc-feat{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:7px;}
+.pc-feat .ck{font-size:12px;}
+.pc-feat .ck.yes{color:var(--green);}
+.pc-feat .ck.no{color:var(--text3);}
+.pc-feat.disabled{opacity:0.4;}
+.pc-btn{width:100%;padding:10px;border-radius:9px;border:none;font-size:13px;font-family:var(--sans);font-weight:500;cursor:pointer;transition:all 0.18s;}
+.pc-btn.free{background:var(--bg3);color:var(--text2);border:1px solid var(--border);}
+.pc-btn.free:hover{background:var(--bg4);}
+.pc-btn.pro{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;}
+.pc-btn.pro:hover{opacity:0.88;box-shadow:0 5px 18px rgba(245,158,11,0.35);}
+.pc-btn.campus{background:var(--accent);color:#fff;}
+.pc-btn.campus:hover{background:var(--accent2);}
+.faq-section{max-width:640px;margin:0 auto;}
+.faq-title{font-family:var(--serif);font-size:22px;text-align:center;margin-bottom:18px;}
+.faq-item{border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;background:var(--bg2);}
+.faq-q{padding:13px 16px;cursor:pointer;font-size:13px;color:var(--text);display:flex;justify-content:space-between;align-items:center;}
+.faq-q:hover{background:var(--bg3);}
+.faq-a{padding:0 16px;max-height:0;overflow:hidden;transition:all 0.25s;font-size:13px;color:var(--text2);line-height:1.65;}
+.faq-a.open{padding:0 16px 13px;max-height:200px;}
+
+/* ── MODALS ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity 0.18s;backdrop-filter:blur(4px);}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:15px;padding:20px;width:440px;max-height:82vh;overflow-y:auto;box-shadow:var(--shadow-md);}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.modal-title{font-size:15px;font-weight:500;color:var(--text);}
+.xbtn{width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:all 0.14s;}
+.xbtn:hover{background:var(--bg4);color:var(--text);}
+
+/* ── RATE MODAL ── */
+.rate-stars{display:flex;gap:10px;justify-content:center;margin:16px 0;}
+.rate-star{font-size:32px;cursor:pointer;transition:transform 0.1s;user-select:none;}
+.rate-star:hover,.rate-star.hover{transform:scale(1.25);}
+.rate-star.sel{color:var(--gold);}
+.rate-star.unsel{color:var(--border2);}
+
+/* ── ISSUE MODAL ── */
+.issue-modal .escal-info{background:var(--rose-bg);border:1px solid rgba(220,38,38,0.2);border-radius:8px;padding:10px 12px;font-size:11px;color:var(--rose);line-height:1.5;margin-bottom:12px;}
+.issue-modal .escal-info strong{font-weight:600;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);padding:10px 16px;border-radius:9px;font-size:13px;z-index:999;transform:translateY(80px);transition:transform 0.28s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;display:flex;align-items:center;gap:7px;box-shadow:var(--shadow-md);}
+.toast.show{transform:translateY(0);}
+
+/* ── MISC ── */
+.empty-state{text-align:center;padding:50px 20px;color:var(--text3);}
+.esi{font-size:36px;margin-bottom:10px;}
+.empty-state p{font-size:13px;}
+.gold-gradient{background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+</style>
+</head>
+<body>
+
+<div class="shell">
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar">
+  <div class="logo-wrap">
+    <div class="logo">
+      <div class="logo-mark">📚</div>
+      <div>
+        <div class="logo-text">Note<em>Share</em></div>
+        <div class="logo-sub">BCA Hub</div>
+      </div>
+    </div>
+  </div>
+  <nav class="nav-scroll">
+    <div class="nav-group">
+      <div class="nav-label">Explore</div>
+      <!-- Dashboard: click to toggle, no auto-open -->
+      <div class="nav-item" id="nav-dashboard" onclick="toggleDashboard(this)"><span class="ni">⊞</span> Dashboard <span class="nbadge" id="dash-arrow">▾</span></div>
+      <div class="nav-item" onclick="nav('browse',this)"><span class="ni">◈</span> Browse Notes <span class="nbadge">142</span></div>
+      <div class="nav-item" onclick="nav('trending',this)"><span class="ni">↑</span> Trending</div>
+      <div class="nav-item" onclick="nav('upload',this)"><span class="ni">+</span> Upload Notes</div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">My Space</div>
+      <div class="nav-item" onclick="nav('my-notes',this)"><span class="ni">□</span> My Notes <span class="nbadge">7</span></div>
+      <div class="nav-item" onclick="nav('saved',this)"><span class="ni">♡</span> Saved <span class="nbadge">23</span></div>
+      <div class="nav-item" onclick="nav('leaderboard',this)"><span class="ni">★</span> Leaderboard</div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">AI Tools</div>
+      <div class="nav-item" onclick="nav('pricing',this)"><span class="ni">✦</span> Upgrade to Pro <span class="pro-badge-nav">PRO</span></div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">Semesters</div>
+      <div class="sem-row">
+        <div class="sem-chip" onclick="goSem(this,'1')">Sem 1</div>
+        <div class="sem-chip" onclick="goSem(this,'2')">Sem 2</div>
+        <div class="sem-chip" onclick="goSem(this,'3')">Sem 3</div>
+        <div class="sem-chip" onclick="goSem(this,'4')">Sem 4</div>
+        <div class="sem-chip" onclick="goSem(this,'5')">Sem 5</div>
+        <div class="sem-chip" onclick="goSem(this,'6')">Sem 6</div>
+      </div>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-card" onclick="nav('leaderboard',null)">
+      <div class="avatar av-lg">RS</div>
+      <div><div class="user-name">Rahul Singh</div><div class="user-meta">BCA · Sem 4 · Student</div></div>
+      <div class="pts-badge">320 pts</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+  <div class="topbar">
+    <div class="search-wrap">
+      <span class="si">⌕</span>
+      <input class="search-input" id="search-input" placeholder="Search notes, subjects, topics..." oninput="onSearch(this.value)"/>
+    </div>
+    <div class="tbr">
+      <button class="icon-btn" onclick="nav('trending',null)" title="Trending">🔥</button>
+      <button class="icon-btn" onclick="nav('saved',null)" title="Saved">♡</button>
+      <button class="btn btn-gold" onclick="nav('pricing',null)">✦ Upgrade Pro</button>
+      <button class="btn btn-primary" onclick="openUploadModal()">+ Upload</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- HOME (dashboard — hidden by default, shown on click) -->
+    <div id="page-home" class="page">
+      <div class="page-headline">Good morning, <em>Rahul</em> 👋</div>
+      <div class="page-sub">Here's what's happening in your BCA community today.</div>
+      <div class="two-col">
+        <div>
+          <div class="sec-hdr"><div class="sec-title">Recent Uploads</div><span class="view-all" onclick="nav('browse',null)">View all →</span></div>
+          <div id="home-grid" class="notes-grid"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="panel">
+            <div class="panel-title">🔔 Notifications</div>
+            <div class="notif-item"><div class="nd nd-new"></div><div><div class="notif-text">Priya uploaded new <strong>DBMS Unit 3</strong> notes</div><div class="notif-time">2 min ago</div></div></div>
+            <div class="notif-item"><div class="nd nd-new"></div><div><div class="notif-text">Your OS notes got 15 new downloads!</div><div class="notif-time">1 hr ago</div></div></div>
+            <div class="notif-item"><div class="nd nd-read"></div><div><div class="notif-text">Amit commented on your CN notes</div><div class="notif-time">Yesterday</div></div></div>
+            <div class="notif-item"><div class="nd nd-read"></div><div><div class="notif-text">New Java notes by Sneha M.</div><div class="notif-time">2 days ago</div></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">✦ AI Tools — Pro Feature</div>
+            <div style="background:linear-gradient(135deg,rgba(245,158,11,0.06),rgba(239,68,68,0.06));border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:14px;text-align:center;">
+              <div style="font-size:22px;margin-bottom:8px;">🧠</div>
+              <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;">Unlock AI Study Tools</div>
+              <div style="font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.5;">Flashcards, Short Notes & Mind Maps generated from any note</div>
+              <button class="btn btn-gold" style="width:100%;padding:9px;" onclick="nav('pricing',null)">✦ View Plans →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BROWSE -->
+    <div id="page-browse" class="page active">
+      <div class="sec-hdr" style="margin-bottom:12px;">
+        <div><div class="sec-title" style="font-size:17px;">Browse Notes</div><div class="sec-count" id="browse-count">Showing all notes</div></div>
+      </div>
+      <div class="sem-tabs" id="sem-tabs">
+        <div class="stab active" onclick="setSem(this,'all')">All</div>
+        <div class="stab" onclick="setSem(this,'1')">Sem 1</div>
+        <div class="stab" onclick="setSem(this,'2')">Sem 2</div>
+        <div class="stab" onclick="setSem(this,'3')">Sem 3</div>
+        <div class="stab" onclick="setSem(this,'4')">Sem 4</div>
+        <div class="stab" onclick="setSem(this,'5')">Sem 5</div>
+        <div class="stab" onclick="setSem(this,'6')">Sem 6</div>
+      </div>
+      <div class="filter-row">
+        <div class="fc active" onclick="setSubj(this,'all')">All Subjects</div>
+        <div class="fc" onclick="setSubj(this,'CS')">CS</div>
+        <div class="fc" onclick="setSubj(this,'Math')">Mathematics</div>
+        <div class="fc" onclick="setSubj(this,'DBMS')">DBMS</div>
+        <div class="fc" onclick="setSubj(this,'OS')">Operating Systems</div>
+        <div class="fc" onclick="setSubj(this,'CN')">Computer Networks</div>
+        <div class="fc" onclick="setSubj(this,'Java')">Java</div>
+        <div class="fc" onclick="setSubj(this,'DS')">Data Structures</div>
+      </div>
+      <div id="browse-grid" class="notes-grid"></div>
+    </div>
+
+    <!-- TRENDING -->
+    <div id="page-trending" class="page">
+      <div class="page-headline">🔥 <em>Trending</em> Now</div>
+      <div class="page-sub">Most downloaded & highest rated notes this week.</div>
+      <div id="trending-list"></div>
+    </div>
+
+    <!-- UPLOAD -->
+    <div id="page-upload" class="page">
+      <div class="page-headline">Share Your <em>Notes</em></div>
+      <div class="page-sub">Upload as a student, senior, or teacher. Your role is shown on your note.</div>
+      <div style="max-width:540px;">
+        <div class="form-g">
+          <label class="lbl">Uploading As *</label>
+          <div class="role-selector">
+            <div class="role-opt" onclick="selectRole(this,'student')">
+              <div class="role-opt-icon">🎓</div>
+              <div class="role-opt-name">Student</div>
+            </div>
+            <div class="role-opt active" onclick="selectRole(this,'senior')">
+              <div class="role-opt-icon">📖</div>
+              <div class="role-opt-name">Senior</div>
+            </div>
+            <div class="role-opt" onclick="selectRole(this,'teacher')">
+              <div class="role-opt-icon">👩‍🏫</div>
+              <div class="role-opt-name">Teacher</div>
+            </div>
+          </div>
+        </div>
+        <div class="upload-zone" onclick="toast('📁 File picker would open here!')">
+          <div class="uz-icon">📄</div>
+          <div class="uz-title">Drop your file or click to browse</div>
+          <div class="uz-sub">PDF, DOCX, PPTX · Max 25 MB</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:13px;">
+          <div class="form-g"><label class="lbl">Notes Title *</label><input class="inp" id="up-title" placeholder="e.g., DBMS Unit 3 — Normalization Complete Notes"/></div>
+          <div class="fr2">
+            <div class="form-g"><label class="lbl">Semester *</label><select class="sel"><option value="">Select</option><option>Semester 1</option><option>Semester 2</option><option>Semester 3</option><option>Semester 4</option><option>Semester 5</option><option>Semester 6</option></select></div>
+            <div class="form-g"><label class="lbl">Unit</label><input class="inp" placeholder="e.g., Unit 3"/></div>
+          </div>
+          <div class="form-g"><label class="lbl">Subject *</label>
+            <div class="subj-grid">
+              <div class="subj-btn" onclick="selSubj(this)">CS</div><div class="subj-btn" onclick="selSubj(this)">Math</div>
+              <div class="subj-btn" onclick="selSubj(this)">DBMS</div><div class="subj-btn" onclick="selSubj(this)">OS</div>
+              <div class="subj-btn" onclick="selSubj(this)">CN</div><div class="subj-btn" onclick="selSubj(this)">Java</div>
+              <div class="subj-btn" onclick="selSubj(this)">DS</div><div class="subj-btn" onclick="selSubj(this)">Other</div>
+            </div>
+          </div>
+          <div class="form-g"><label class="lbl">Description</label><textarea class="txa" placeholder="What topics are covered? Exam tips?"></textarea></div>
+          <div class="form-g"><label class="lbl">Tags</label><input class="inp" placeholder="e.g., normalization, SQL, ER diagram"/></div>
+          <button class="upload-btn" onclick="doUpload()">Share Notes <span style="font-size:11px;opacity:0.85;font-family:var(--mono)">+ 50 pts</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY NOTES -->
+    <div id="page-my-notes" class="page">
+      <div class="sec-hdr" style="margin-bottom:16px;">
+        <div><div class="sec-title" style="font-size:17px;">My Notes</div><div class="sec-count">7 notes uploaded</div></div>
+        <button class="btn btn-primary" onclick="nav('upload',null)">+ Upload New</button>
+      </div>
+      <div id="my-grid" class="notes-grid"></div>
+    </div>
+
+    <!-- SAVED -->
+    <div id="page-saved" class="page">
+      <div class="sec-hdr" style="margin-bottom:16px;">
+        <div><div class="sec-title" style="font-size:17px;">Saved Notes</div><div class="sec-count">23 notes saved</div></div>
+      </div>
+      <div id="saved-grid" class="notes-grid"></div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div id="page-leaderboard" class="page">
+      <div class="page-headline">Top <em>Contributors</em></div>
+      <div class="page-sub">Ranked by notes shared, downloads & ratings.</div>
+      <div class="two-col">
+        <div><div class="lb-list" id="lb-list"></div></div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="panel">
+            <div class="panel-title">Your Progress</div>
+            <div style="text-align:center;padding:8px 0;">
+              <div class="avatar av-lg" style="width:48px;height:48px;font-size:15px;margin:0 auto 8px;">RS</div>
+              <div style="font-size:14px;font-weight:500;color:var(--text);">Rahul Singh</div>
+              <div style="font-size:10px;color:var(--text3);font-family:var(--mono);">BCA Sem 4 · Rank #7</div>
+              <div style="font-size:28px;font-weight:600;color:var(--accent);font-family:var(--mono);margin:10px 0 2px;">320</div>
+              <div style="font-size:10px;color:var(--text3);font-family:var(--mono);">points</div>
+            </div>
+            <div style="margin-top:12px;">
+              <div class="prog-label"><span>Rank #7</span><span>Rank #6 → 380</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:84%"></div></div>
+            </div>
+            <div class="mini-stat-grid">
+              <div class="mini-stat"><div class="mini-stat-val">7</div><div class="mini-stat-label">notes shared</div></div>
+              <div class="mini-stat"><div class="mini-stat-val">142</div><div class="mini-stat-label">downloads</div></div>
+              <div class="mini-stat"><div class="mini-stat-val">4.6</div><div class="mini-stat-label">avg rating</div></div>
+              <div class="mini-stat"><div class="mini-stat-val">38</div><div class="mini-stat-label">saves</div></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">Points System</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--text3);">
+              <div style="display:flex;justify-content:space-between;"><span>Upload a note</span><span style="color:var(--green);font-family:var(--mono);">+50</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Per download</span><span style="color:var(--green);font-family:var(--mono);">+2</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>5★ rating received</span><span style="color:var(--green);font-family:var(--mono);">+10</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Note saved by someone</span><span style="color:var(--green);font-family:var(--mono);">+5</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Daily login</span><span style="color:var(--green);font-family:var(--mono);">+5</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRICING -->
+    <div id="page-pricing" class="page">
+      <div class="pricing-hero">
+        <div class="page-headline" style="text-align:center;">Unlock <em>AI Study Tools</em></div>
+        <div class="page-sub" style="text-align:center;">Supercharge your BCA prep with AI-generated flashcards, short notes & mind maps.</div>
+        <div class="pricing-toggle">
+          <div class="ptoggle">
+            <div class="pt-opt active" onclick="setBilling(this,'monthly')">Monthly</div>
+            <div class="pt-opt" onclick="setBilling(this,'yearly')">Yearly</div>
+          </div>
+          <div class="save-badge">Save 40% yearly</div>
+        </div>
+      </div>
+      <div class="pricing-grid">
+        <div class="price-card">
+          <div class="pc-tier">Free</div>
+          <div class="pc-price">₹0</div>
+          <div class="pc-period">forever</div>
+          <div class="pc-divider"></div>
+          <div class="pc-features">
+            <div class="pc-feat"><span class="ck yes">✓</span> Browse all notes</div>
+            <div class="pc-feat"><span class="ck yes">✓</span> Download 5 notes/day</div>
+            <div class="pc-feat"><span class="ck yes">✓</span> Upload notes & earn points</div>
+            <div class="pc-feat"><span class="ck yes">✓</span> Rate & save notes</div>
+            <div class="pc-feat"><span class="ck yes">✓</span> Read notes in-app</div>
+            <div class="pc-feat disabled"><span class="ck no">✗</span> AI Flashcards</div>
+            <div class="pc-feat disabled"><span class="ck no">✗</span> AI Short Notes</div>
+            <div class="pc-feat disabled"><span class="ck no">✗</span> AI Mind Maps</div>
+          </div>
+          <button class="pc-btn free">Current Plan</button>
+        </div>
+        <div class="price-card featured">
+          <div class="plan-popular">MOST POPULAR</div>
+          <div class="pc-tier">Pro Student</div>
+          <div class="pc-price gold-text" id="pro-price">₹99</div>
+          <div class="pc-period" id="pro-period">per month</div>
+          <div class="pc-divider"></div>
+          <div class="pc-features">
+            <div class="pc-feat"><span class="ck yes">✓</span> Everything in Free</div>
+            <div class="pc-feat"><span class="ck yes">✓</span> Unlimited downloads</div>
+            <div class="pc-feat"><span class="ck yes">✓</span> <strong>AI Flashcard Generator</strong></div>
+            <div class="pc-feat"><span class="ck yes">✓</span> <strong>AI Short Notes (TL;DR)</strong></div>
+            <div class="pc-feat"><span class="ck yes">✓</span> <strong>AI Mind Map Builder</strong></div>
+            <div class="pc-feat"><span class="ck yes">✓</span> 50 AI generations/month</div>
+            <div class="pc-feat"><span class="ck yes">✓</span> Priority support</div>
+          </div>
+          <button class="pc-btn pro" onclick="activatePro()">✦ Get Pro →</button>
+        </div>
+        <div class="price-card">
+          <div class="pc-tier">Campus Pack</div>
+          <div class="pc-price" id="campus-price">₹999</div>
+          <div class="pc-period" id="campus-period">per month · 10 seats</div>
+          <div class="pc-divider"></div>
+          <div class="pc-features">
+            <div class="pc-feat"><span class="ck yes">✓</span> Everything in Pro</div>
+            <div class="pc-feat"><span class="ck yes">✓</span> 10 student seats</div>
+            <div class="pc-feat"><span class="ck yes">✓</span> Unlimited AI generations</div>
+            <div class="pc-feat"><span class="ck yes">✓</span> Admin dashboard</div>
+            <div class="pc-feat"><span class="ck yes">✓</span> Bulk note imports</div>
+            <div class="pc-feat"><span class="ck yes">✓</span> College branding</div>
+            <div class="pc-feat"><span class="ck yes">✓</span> Dedicated support</div>
+          </div>
+          <button class="pc-btn campus" onclick="toast('📧 We will contact you shortly!')">Contact Us</button>
+        </div>
+      </div>
+      <div class="faq-section">
+        <div class="faq-title">Frequently Asked <em style="font-style:italic;color:var(--accent);">Questions</em></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>What AI tools are included in Pro?</span><span>+</span></div><div class="faq-a">Pro includes three AI tools: Flashcard Generator (creates Q&A cards from your notes), Short Notes / TL;DR (condenses long notes into key bullet points), and Mind Map Builder (visual concept maps). All powered by Claude AI.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Can I cancel anytime?</span><span>+</span></div><div class="faq-a">Yes, you can cancel your subscription anytime from your account settings. You'll keep Pro access until the end of your billing period. No hidden fees or cancellation charges.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>Is there a student discount?</span><span>+</span></div><div class="faq-a">Yes! Verify your college email (.edu or institution email) and get an additional 20% off any plan. The yearly Pro plan already comes at ₹59/month — verify your student status to bring it to ₹47/month.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>How many AI generations do I get?</span><span>+</span></div><div class="faq-a">Pro plan includes 50 AI generations per month. Each flashcard deck, short notes summary, or mind map counts as one generation. Unused generations don't carry over. Campus Pack users get unlimited generations.</div></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- ═══ STATS BOTTOM BAR ═══ -->
+  <div class="stats-bottom-bar">
+    <div class="stat-item">
+      <div class="stat-icon blue">📚</div>
+      <div class="stat-body">
+        <div class="stat-label">Total Notes</div>
+        <div class="stat-value">142</div>
+        <div class="stat-prog"><div class="stat-prog-track"><div class="stat-prog-fill blue" style="width:71%"></div></div></div>
+        <div class="stat-change up">↑ 12 this week</div>
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon green">⬇️</div>
+      <div class="stat-body">
+        <div class="stat-label">Downloads</div>
+        <div class="stat-value">3.2k</div>
+        <div class="stat-prog"><div class="stat-prog-track"><div class="stat-prog-fill green" style="width:82%"></div></div></div>
+        <div class="stat-change up">↑ 240 today</div>
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon amber">👥</div>
+      <div class="stat-body">
+        <div class="stat-label">Contributors</div>
+        <div class="stat-value">58</div>
+        <div class="stat-prog"><div class="stat-prog-track"><div class="stat-prog-fill amber" style="width:58%"></div></div></div>
+        <div class="stat-change up">↑ 4 new</div>
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon purple">⭐</div>
+      <div class="stat-body">
+        <div class="stat-label">Your Points</div>
+        <div class="stat-value">320</div>
+        <div class="stat-prog"><div class="stat-prog-track"><div class="stat-prog-fill purple" style="width:84%"></div></div></div>
+        <div class="stat-change neutral">Rank #7</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- ═══ NOTE READER ═══ -->
+<div class="reader-shell" id="reader-shell">
+  <div class="reader-topbar">
+    <button class="btn btn-ghost" style="padding:6px 10px;" onclick="closeReader()">← Back</button>
+    <div class="reader-title" id="reader-title">Note Title</div>
+    <div style="display:flex;align-items:center;gap:7px;">
+      <button class="btn btn-ghost" style="padding:6px 10px;font-size:12px;" onclick="toast('📥 Download started!')">↓ Download</button>
+      <button class="btn btn-ghost" style="padding:6px 10px;font-size:12px;" onclick="openRateModal()">☆ Rate</button>
+      <button class="btn btn-ghost" style="padding:6px 10px;font-size:12px;" onclick="toast('♡ Saved!')">♡ Save</button>
+      <button class="btn btn-danger" style="padding:6px 10px;font-size:12px;" onclick="openIssueModal()">⚑ Raise Issue</button>
+    </div>
+  </div>
+  <div class="reader-body">
+    <div class="reader-content" id="reader-content"></div>
+    <div class="reader-sidebar">
+      <div class="rs-title">Table of Contents</div>
+      <div id="reader-toc"></div>
+      <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:14px;">
+        <div class="rs-title">Note Info</div>
+        <div id="reader-info" style="font-size:12px;color:var(--text2);display:flex;flex-direction:column;gap:7px;"></div>
+      </div>
+      <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px;">
+        <div class="rs-title" style="margin-bottom:10px;">Your Rating</div>
+        <div style="display:flex;gap:4px;" id="reader-rating-stars"></div>
+      </div>
+      <!-- ISSUES IN SIDEBAR -->
+      <div class="issue-section" id="reader-issues-section">
+        <div class="issue-header">
+          <div class="issue-title">⚑ Issues <span class="issue-count-badge" id="issue-count-badge">2 open</span></div>
+          <span class="view-all" onclick="openIssueModal()" style="font-size:11px;">+ Raise</span>
+        </div>
+        <div class="issue-list" id="reader-issues-list"></div>
+      </div>
+    </div>
+  </div>
+  <div class="ai-tools-bar">
+    <div class="ai-label">✦ AI Tools:</div>
+    <button class="ai-tool-btn free" onclick="openAI('flashcard')"><span class="aico">🃏</span> Flashcards <span class="pro-lock">PRO</span></button>
+    <button class="ai-tool-btn free" onclick="openAI('shortnotes')"><span class="aico">📝</span> Short Notes <span class="pro-lock">PRO</span></button>
+    <button class="ai-tool-btn free" onclick="openAI('mindmap')"><span class="aico">🧠</span> Mind Map <span class="pro-lock">PRO</span></button>
+    <div style="margin-left:auto;font-size:11px;color:var(--text3);">Not Pro? <span style="color:var(--gold);cursor:pointer;" onclick="showPaywall('flashcard')">Upgrade →</span></div>
+  </div>
+</div>
+
+<!-- ═══ AI PANEL ═══ -->
+<div class="ai-panel" id="ai-panel">
+  <div class="ai-panel-top">
+    <div class="ai-panel-title" id="ai-panel-title">AI Flashcards</div>
+    <button class="xbtn" onclick="closeAI()">×</button>
+  </div>
+  <div class="ai-panel-body" id="ai-panel-body"></div>
+</div>
+
+<!-- ═══ PAYWALL MODAL ═══ -->
+<div class="paywall-overlay" id="paywall-overlay" onclick="if(event.target===this)closePaywall()">
+  <div class="paywall-modal">
+    <div class="paywall-header">
+      <div class="paywall-crown">✦</div>
+      <div class="paywall-title">Unlock <em>Pro AI Tools</em></div>
+      <div class="paywall-sub">This feature requires a Pro subscription</div>
+    </div>
+    <div class="paywall-features-list">
+      <div class="pf-chip"><span class="ico">🃏</span> Flashcards</div>
+      <div class="pf-chip"><span class="ico">📝</span> Short Notes</div>
+      <div class="pf-chip"><span class="ico">🧠</span> Mind Maps</div>
+      <div class="pf-chip"><span class="ico">⚡</span> Instant AI</div>
+      <div class="pf-chip"><span class="ico">♾️</span> Unlimited DL</div>
+    </div>
+    <div class="paywall-plans">
+      <div class="plan-card" onclick="selectPlan(this,'monthly')">
+        <div class="plan-name">Monthly</div>
+        <div class="plan-price">₹99 <span>/mo</span></div>
+        <div class="plan-features">
+          <div class="plan-feat">50 AI generations/mo</div>
+          <div class="plan-feat">All 3 AI tools</div>
+          <div class="plan-feat">Cancel anytime</div>
+        </div>
+      </div>
+      <div class="plan-card highlight" onclick="selectPlan(this,'yearly')">
+        <div class="plan-popular">BEST VALUE</div>
+        <div class="plan-name">Yearly</div>
+        <div class="plan-price">₹59 <span>/mo</span></div>
+        <div class="plan-features">
+          <div class="plan-feat">Save ₹480/year</div>
+          <div class="plan-feat">All Pro features</div>
+          <div class="plan-feat">Priority support</div>
+        </div>
+      </div>
+    </div>
+    <div class="paywall-footer">
+      <button class="full-btn gold" onclick="activatePro()">✦ Start Pro — ₹99/month</button>
+      <button class="full-btn ghost" onclick="closePaywall()">Maybe later</button>
+    </div>
+  </div>
+</div>
+
+<!-- UPLOAD MODAL -->
+<div class="modal-overlay" id="upload-modal" onclick="if(event.target===this)closeUploadModal()">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title">Quick Upload</div><button class="xbtn" onclick="closeUploadModal()">×</button></div>
+    <div class="form-g" style="margin-bottom:12px;">
+      <label class="lbl">Uploading As</label>
+      <div class="role-selector" style="margin-bottom:0;">
+        <div class="role-opt" onclick="selectRole(this,'student')">
+          <div class="role-opt-icon">🎓</div><div class="role-opt-name">Student</div>
+        </div>
+        <div class="role-opt active" onclick="selectRole(this,'senior')">
+          <div class="role-opt-icon">📖</div><div class="role-opt-name">Senior</div>
+        </div>
+        <div class="role-opt" onclick="selectRole(this,'teacher')">
+          <div class="role-opt-icon">👩‍🏫</div><div class="role-opt-name">Teacher</div>
+        </div>
+      </div>
+    </div>
+    <div class="upload-zone" style="padding:24px;" onclick="toast('📁 File picker would open!')">
+      <div class="uz-icon" style="font-size:28px;">📄</div>
+      <div class="uz-title" style="font-size:13px;">Drop file or click to browse</div>
+      <div class="uz-sub">PDF, DOCX, PPTX · Max 25MB</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:11px;margin-top:14px;">
+      <div><label class="lbl">Title *</label><input class="inp" placeholder="e.g., OS Unit 4 — Memory Management"/></div>
+      <div class="fr2">
+        <div><label class="lbl">Subject</label><select class="sel"><option>DBMS</option><option>OS</option><option>Java</option><option>DS</option><option>CN</option><option>Math</option><option>CS</option></select></div>
+        <div><label class="lbl">Semester</label><select class="sel"><option>Sem 1</option><option>Sem 2</option><option>Sem 3</option><option selected>Sem 4</option><option>Sem 5</option><option>Sem 6</option></select></div>
+      </div>
+      <button class="upload-btn" onclick="doUpload()">Upload & Earn 50 pts</button>
+    </div>
+  </div>
+</div>
+
+<!-- RATE MODAL -->
+<div class="modal-overlay" id="rate-modal" onclick="if(event.target===this)closeRateModal()">
+  <div class="modal" style="width:360px;text-align:center;">
+    <div class="modal-hdr"><div class="modal-title">Rate this Note</div><button class="xbtn" onclick="closeRateModal()">×</button></div>
+    <div style="font-size:13px;color:var(--text3);margin-bottom:4px;" id="rate-note-title">DBMS Unit 3 Notes</div>
+    <div class="rate-stars" id="rate-stars">
+      <span class="rate-star unsel" onclick="submitRate(1)" onmouseover="hoverRate(1)" onmouseout="unhoverRate()">★</span>
+      <span class="rate-star unsel" onclick="submitRate(2)" onmouseover="hoverRate(2)" onmouseout="unhoverRate()">★</span>
+      <span class="rate-star unsel" onclick="submitRate(3)" onmouseover="hoverRate(3)" onmouseout="unhoverRate()">★</span>
+      <span class="rate-star unsel" onclick="submitRate(4)" onmouseover="hoverRate(4)" onmouseout="unhoverRate()">★</span>
+      <span class="rate-star unsel" onclick="submitRate(5)" onmouseover="hoverRate(5)" onmouseout="unhoverRate()">★</span>
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:14px;" id="rate-label">Tap a star to rate</div>
+    <div><label class="lbl">Comment (optional)</label><textarea class="txa" id="rate-comment" rows="2" placeholder="What did you think of these notes?"></textarea></div>
+    <button class="upload-btn" style="margin-top:12px;" onclick="closeRateModal();toast('⭐ Thanks for rating!')">Submit Rating</button>
+  </div>
+</div>
+
+<!-- ISSUE MODAL -->
+<div class="modal-overlay" id="issue-modal" onclick="if(event.target===this)closeIssueModal()">
+  <div class="modal issue-modal" style="width:460px;">
+    <div class="modal-hdr">
+      <div class="modal-title">⚑ Raise an Issue</div>
+      <button class="xbtn" onclick="closeIssueModal()">×</button>
+    </div>
+    <div class="escal-info">
+      <strong>How it works:</strong> Your issue will first be visible to other students for peer help. If unresolved in 24h, our AI will attempt a solution. If still unresolved after 48h, it escalates automatically to the teacher.
+    </div>
+    <div class="form-g">
+      <label class="lbl">Issue Type</label>
+      <div class="filter-row" style="margin-bottom:0;">
+        <div class="fc active" onclick="setIssueType(this,'error')">❌ Content Error</div>
+        <div class="fc" onclick="setIssueType(this,'unclear')">❓ Unclear Explanation</div>
+        <div class="fc" onclick="setIssueType(this,'missing')">📭 Missing Content</div>
+        <div class="fc" onclick="setIssueType(this,'other')">💬 Other</div>
+      </div>
+    </div>
+    <div class="form-g" style="margin-top:12px;">
+      <label class="lbl">Describe the Issue *</label>
+      <textarea class="txa" id="issue-desc" rows="3" placeholder="e.g., The explanation of BCNF in page 12 seems incorrect. The condition should be..."></textarea>
+    </div>
+    <div class="form-g">
+      <label class="lbl">Page / Section (optional)</label>
+      <input class="inp" id="issue-page" placeholder="e.g., Page 12, Section 2.3"/>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px;">
+      <button class="upload-btn" style="flex:1;" onclick="submitIssue()">Submit Issue</button>
+      <button class="btn btn-ghost" style="padding:10px 16px;" onclick="closeIssueModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toast-icon"></span><span id="toast-text"></span></div>
+
+<script>
+// ═══ DATA ═══
+const NOTES=[
+  {id:1,title:"DBMS Complete Notes — ER Diagrams, Normalization & SQL",subject:"DBMS",sem:4,unit:"Unit 1–3",author:"Priya K.",initials:"PK",role:"senior",downloads:312,saves:87,pages:48,daysAgo:1,mine:false,saved:true,rating:4.7,ratingCount:84,desc:"Comprehensive coverage of ER diagrams, all normal forms (1NF–BCNF), SQL queries with examples, and transaction management."},
+  {id:2,title:"Operating Systems — Deadlock, Scheduling & Synchronization",subject:"OS",sem:4,unit:"Unit 4",author:"Kiran M.",initials:"KM",role:"student",downloads:278,saves:65,pages:32,daysAgo:2,mine:false,saved:false,rating:4.5,ratingCount:62,desc:"Deadlock detection, Banker's algorithm, CPU scheduling algorithms, and process synchronization with semaphores."},
+  {id:3,title:"Data Structures — Trees, Graphs & Sorting Algorithms",subject:"DS",sem:3,unit:"Unit 2",author:"Rahul S.",initials:"RS",role:"student",downloads:195,saves:54,pages:40,daysAgo:3,mine:true,saved:false,rating:4.6,ratingCount:48,desc:"Binary trees, AVL trees, graph traversals (BFS/DFS), shortest path algorithms, and sorting algorithm comparisons."},
+  {id:4,title:"Computer Networks — OSI Model & TCP/IP Protocol Suite",subject:"CN",sem:5,unit:"Unit 1",author:"Prof. Sharma",initials:"PS",role:"teacher",downloads:241,saves:72,pages:36,daysAgo:4,mine:false,saved:true,rating:4.8,ratingCount:71,desc:"Complete OSI model explanation, TCP/IP stack, IPv4/IPv6 addressing, subnetting, ARP, DHCP, and common protocols."},
+  {id:5,title:"Java Programming — OOP Concepts & Exception Handling",subject:"Java",sem:3,unit:"Unit 2–3",author:"Amit P.",initials:"AP",role:"senior",downloads:188,saves:49,pages:44,daysAgo:5,mine:false,saved:false,rating:4.3,ratingCount:37,desc:"OOP in Java: classes, inheritance, polymorphism, abstraction, interfaces, exception handling, and collections."},
+  {id:6,title:"Discrete Mathematics — Graph Theory & Logic",subject:"Math",sem:2,unit:"Unit 3",author:"Prof. Mehta",initials:"PM",role:"teacher",downloads:156,saves:41,pages:28,daysAgo:6,mine:false,saved:true,rating:4.2,ratingCount:29,desc:"Graph theory, propositional and predicate logic, sets and relations, functions, combinatorics, boolean algebra."},
+  {id:7,title:"Operating Systems — Memory Management & Virtual Memory",subject:"OS",sem:4,unit:"Unit 5",author:"Rahul S.",initials:"RS",role:"student",downloads:134,saves:38,pages:22,daysAgo:7,mine:true,saved:false,rating:4.4,ratingCount:31,desc:"Paging, segmentation, page replacement algorithms (FIFO, LRU, Optimal), TLB, demand paging, and thrashing."},
+  {id:8,title:"DBMS Lab Manual — MySQL Queries & Stored Procedures",subject:"DBMS",sem:4,unit:"Lab",author:"Neha R.",initials:"NR",role:"senior",downloads:298,saves:80,pages:30,daysAgo:1,mine:false,saved:false,rating:4.6,ratingCount:59,desc:"Complete lab manual with MySQL commands, DDL/DML exercises, joins, stored procedures, triggers, and views."},
+  {id:9,title:"C Programming — Fundamentals & Pointers",subject:"CS",sem:1,unit:"Unit 1–4",author:"Ankit S.",initials:"AS",role:"student",downloads:220,saves:60,pages:52,daysAgo:10,mine:false,saved:true,rating:4.5,ratingCount:55,desc:"Basics of C: data types, operators, control flow, arrays, pointers, strings, functions, structures, and file I/O."},
+  {id:10,title:"Data Structures — Linked Lists, Stacks & Queues",subject:"DS",sem:2,unit:"Unit 1",author:"Priya K.",initials:"PK",role:"senior",downloads:175,saves:45,pages:26,daysAgo:12,mine:false,saved:false,rating:4.1,ratingCount:22,desc:"Singly, doubly, circular linked lists; stack and queue implementations; infix to postfix; applications & complexity."},
+];
+
+const TAG_CLASS={DBMS:'t-dbms',OS:'t-os',DS:'t-ds',CN:'t-cn',Java:'t-java',Math:'t-math',CS:'t-cs'};
+
+const LEADERS=[
+  {name:"Priya Krishnan",pts:620,notes:18,sem:"Sem 4",initials:"PK",rank:1},
+  {name:"Prof. Sharma",pts:580,notes:14,sem:"Teacher",initials:"PS",rank:2,teacher:true},
+  {name:"Kiran Mehta",pts:490,notes:12,sem:"Sem 4",initials:"KM",rank:3},
+  {name:"Amit Patil",pts:415,notes:11,sem:"Sem 3",initials:"AP",rank:4},
+  {name:"Neha Rao",pts:380,notes:9,sem:"Sem 4",initials:"NR",rank:5},
+  {name:"Ankit Sharma",pts:355,notes:8,sem:"Sem 1",initials:"AS",rank:6},
+  {name:"Rahul Singh",pts:320,notes:7,sem:"Sem 4",initials:"RS",rank:7,you:true},
+  {name:"Riya Sinha",pts:280,notes:6,sem:"Sem 2",initials:"RS2",rank:8},
+];
+
+// Sample issues per note
+const NOTE_ISSUES = {
+  1: [
+    {id:1, type:'error', text:'The dependency diagram for BCNF seems to have an incorrect arrow direction on page 14.', author:'Riya S.', time:'2 days ago', status:'ai', reply:{who:'ai', text:'The arrow in BCNF should point from determinant to dependent attribute. In X → Y, the arrow goes from X to Y. Checked against Navathe textbook (6th ed, p.341) — the diagram appears to have a typo. Flagged for teacher review.'}},
+    {id:2, type:'unclear', text:'The explanation of 3NF vs BCNF distinction is confusing. Can someone clarify with an example?', author:'Ankit K.', time:'1 day ago', status:'open', reply:null},
+  ],
+  2: [
+    {id:1, type:'missing', text:'Round Robin scheduling algorithm example is missing from Unit 4.', author:'Deepak R.', time:'3 days ago', status:'resolved', reply:{who:'student', text:'Added a comment below — RR example: processes P1(5ms), P2(3ms), P3(8ms) with quantum=2ms gives turnaround: P1=10, P2=6, P3=17. Hope this helps!'}},
+  ],
+};
+
+let curSubj='all',curSem='all',curSearch='',isPro=false,currentNoteId=null,billingCycle='monthly';
+let dashboardOpen=false;
+let currentIssueType='error';
+
+// ═══ DASHBOARD TOGGLE ═══
+function toggleDashboard(el) {
+  dashboardOpen = !dashboardOpen;
+  const pages = document.querySelectorAll('.page');
+  if (dashboardOpen) {
+    pages.forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-home').classList.add('active');
+    el.classList.add('active');
+    document.getElementById('dash-arrow').textContent='▴';
+    renderAll();
+  } else {
+    document.getElementById('page-home').classList.remove('active');
+    el.classList.remove('active');
+    document.getElementById('dash-arrow').textContent='▾';
+    // show browse
+    document.getElementById('page-browse').classList.add('active');
+    renderAll();
+  }
+}
+
+// ═══ STAR HELPERS ═══
+function starsHTML(rating,noteId){
+  let h=`<div class="stars">`;
+  for(let i=1;i<=5;i++){
+    const cls=i<=Math.round(rating)?'star filled':'star empty';
+    h+=`<span class="${cls}" onclick="event.stopPropagation();openRateModalFor(${noteId})">${i<=Math.round(rating)?'★':'☆'}</span>`;
+  }
+  h+='</div>';
+  return h;
+}
+
+function roleBadgeHTML(role) {
+  if(role==='teacher') return `<span class="role-badge rb-teacher">👩‍🏫 Teacher</span>`;
+  if(role==='senior') return `<span class="role-badge rb-senior">📖 Senior</span>`;
+  return `<span class="role-badge rb-student">🎓 Student</span>`;
+}
+
+// ═══ CARD RENDERER ═══
+function noteCard(n){
+  const tag=TAG_CLASS[n.subject]||'t-cs';
+  return `<div class="note-card" onclick="openReader(${n.id})">
+    <span class="note-tag ${tag}">${n.subject}</span>
+    <div class="note-title">${n.title}</div>
+    <div class="star-row">
+      ${starsHTML(n.rating,n.id)}
+      <span class="rating-count">${n.rating.toFixed(1)} (${n.ratingCount})</span>
+    </div>
+    <div class="note-footer">
+      <div class="note-author"><div class="avatar av-sm">${n.initials}</div>${n.author}${roleBadgeHTML(n.role)}</div>
+      <div class="note-stats">
+        <span class="note-stat">↓${n.downloads}</span>
+        <span class="note-stat">♡${n.saves}</span>
+        <span class="note-stat" style="color:var(--text3);font-size:10px;">${n.pages}pp</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function filtered(){
+  return NOTES.filter(n=>{
+    if(curSearch&&!n.title.toLowerCase().includes(curSearch)&&!n.subject.toLowerCase().includes(curSearch)&&!n.author.toLowerCase().includes(curSearch))return false;
+    if(curSubj!=='all'&&n.subject!==curSubj)return false;
+    if(curSem!=='all'&&n.sem!==parseInt(curSem))return false;
+    return true;
+  });
+}
+
+function render(id,ns){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.innerHTML=ns.length?ns.map(noteCard).join(''):`<div class="empty-state"><div class="esi">📭</div><p>No notes found</p></div>`;
+}
+
+function renderAll(){
+  render('home-grid',NOTES.slice().sort((a,b)=>a.daysAgo-b.daysAgo).slice(0,4));
+  const f=filtered();
+  render('browse-grid',f);
+  const bc=document.getElementById('browse-count');
+  if(bc)bc.textContent=`Showing ${f.length} note${f.length!==1?'s':''}`;
+  render('my-grid',NOTES.filter(n=>n.mine));
+  render('saved-grid',NOTES.filter(n=>n.saved));
+}
+
+function renderTrending(){
+  const sorted=[...NOTES].sort((a,b)=>(b.downloads*0.6+b.rating*20+b.ratingCount*0.5)-(a.downloads*0.6+a.rating*20+a.ratingCount*0.5));
+  const max=sorted[0].downloads;
+  document.getElementById('trending-list').innerHTML=sorted.map((n,i)=>{
+    const rc=i===0?'r1':i===1?'r2':i===2?'r3':'';
+    const pct=Math.round(n.downloads/max*100);
+    return `<div class="trend-item" onclick="openReader(${n.id})">
+      <div class="trend-rank ${rc}">${String(i+1).padStart(2,'0')}</div>
+      <div class="avatar av-sm" style="width:30px;height:30px;font-size:10px;flex-shrink:0;">${n.initials}</div>
+      <div class="trend-body">
+        <div class="trend-title">${n.title}</div>
+        <div class="trend-stars">
+          <div class="mini-stars">${[1,2,3,4,5].map(s=>`<span style="color:${s<=Math.round(n.rating)?'var(--gold)':'var(--border2)'};font-size:10px;">★</span>`).join('')}</div>
+          <span style="font-size:10px;color:var(--text3);font-family:var(--mono);">${n.rating.toFixed(1)} · ${n.subject} · Sem ${n.sem} · ${roleBadgeHTML(n.role).replace(/<[^>]+>/g,'').trim()}</span>
+        </div>
+      </div>
+      <div class="trend-bar">
+        <div class="trend-num">↓${n.downloads}</div>
+        <div class="mb-wrap"><div class="mb-fill" style="width:${pct}%"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderLeaderboard(){
+  document.getElementById('lb-list').innerHTML=LEADERS.map(l=>{
+    const rc=l.rank===1?'lb-r1':l.rank===2?'lb-r2':l.rank===3?'lb-r3':'lb-rn';
+    const teacherTag=l.teacher?'<span class="role-badge rb-teacher" style="margin-left:4px;">👩‍🏫</span>':'';
+    return `<div class="lb-item${l.you?' you':''}">
+      <div class="lb-rank ${rc}">#${l.rank}</div>
+      <div class="avatar av-lg" style="width:30px;height:30px;font-size:11px;${l.you?'background:var(--accent-bg);color:var(--accent);':''}">${l.initials}</div>
+      <div class="lb-info"><div class="lb-name">${l.name}${l.you?'<span class="you-badge">you</span>':''}${teacherTag}</div><div class="lb-sub">${l.sem} · ${l.notes} notes</div></div>
+      <div class="lb-score">${l.pts}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══ NAVIGATION ═══
+function nav(page,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  // reset dashboard state when navigating away
+  dashboardOpen = (page==='home');
+  document.getElementById('dash-arrow').textContent = dashboardOpen ? '▴' : '▾';
+  const pg=document.getElementById('page-'+page);
+  if(pg)pg.classList.add('active');
+  if(el)el.classList.add('active');
+  renderAll();
+  if(page==='trending')renderTrending();
+  if(page==='leaderboard')renderLeaderboard();
+}
+
+function setSem(el,sem){
+  document.querySelectorAll('.stab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');curSem=sem;renderAll();
+}
+function setSubj(el,subj){
+  document.querySelectorAll('.fc').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');curSubj=subj;renderAll();
+}
+function goSem(el,sem){
+  document.querySelectorAll('.sem-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');curSem=sem;nav('browse',null);
+  document.querySelectorAll('.stab').forEach(t=>{t.classList.remove('active');if(t.textContent===`Sem ${sem}`)t.classList.add('active');});
+}
+function onSearch(val){curSearch=val.toLowerCase();if(val.length>0)nav('browse',null);renderAll();}
+
+// ═══ NOTE READER ═══
+const NOTE_CONTENT={
+  1:`<h1>DBMS Complete Notes — ER Diagrams, Normalization & SQL</h1>
+<div class="rmeta"><span>📚 DBMS</span><span>Sem 4 · Unit 1–3</span><span>48 pages</span><span>By Priya K. <span style="background:var(--purple-bg);color:var(--purple);font-size:9px;padding:1px 5px;border-radius:4px;font-family:var(--mono);">Senior</span></span></div>
+<h2>Unit 1: Entity-Relationship Model</h2>
+<h3>What is an ER Diagram?</h3>
+<p>An Entity-Relationship (ER) diagram is a visual representation of data and relationships within a database system. It helps in designing the database schema before implementation.</p>
+<div class="callout"><p>💡 <strong>Exam Tip:</strong> ER diagrams are always asked in the 10-mark section. Practice drawing at least 5 different scenarios.</p></div>
+<h3>Key Components</h3>
+<ul>
+  <li><strong>Entity:</strong> A real-world object (e.g., Student, Course)</li>
+  <li><strong>Attribute:</strong> Properties of an entity (e.g., Name, Roll No)</li>
+  <li><strong>Relationship:</strong> Association between entities (e.g., "enrolls in")</li>
+  <li><strong>Cardinality:</strong> 1:1, 1:N, M:N relationships</li>
+</ul>
+<h2>Unit 2: Normalization</h2>
+<h3>First Normal Form (1NF)</h3>
+<p>A table is in 1NF if it contains only atomic values — no repeating groups or arrays. Every column must have a single value and each row must be unique.</p>
+<h3>Second Normal Form (2NF)</h3>
+<p>A table is in 2NF if it is in 1NF and every non-key attribute is fully functionally dependent on the <strong>entire</strong> primary key. This eliminates partial dependencies.</p>
+<h3>Third Normal Form (3NF)</h3>
+<p>A table is in 3NF if it is in 2NF and no non-prime attribute is transitively dependent on the primary key. Eliminates transitive dependencies.</p>
+<div class="callout"><p>💡 Boyce-Codd Normal Form (BCNF) is a stronger version of 3NF — every determinant must be a candidate key.</p></div>
+<h2>Unit 3: SQL Fundamentals</h2>
+<h3>DDL Commands</h3>
+<p>Data Definition Language commands are used to define database structure: <code>CREATE</code>, <code>ALTER</code>, <code>DROP</code>, <code>TRUNCATE</code>.</p>
+<h3>DML Commands</h3>
+<p>Data Manipulation Language is used for data operations: <code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>. These are the most commonly tested commands.</p>
+<h3>Joins</h3>
+<ul>
+  <li><strong>INNER JOIN:</strong> Returns matching rows from both tables</li>
+  <li><strong>LEFT JOIN:</strong> All rows from left table + matching from right</li>
+  <li><strong>RIGHT JOIN:</strong> All rows from right table + matching from left</li>
+  <li><strong>FULL OUTER JOIN:</strong> All rows from both tables</li>
+</ul>`,
+  default:`<h1>Note Content</h1><div class="rmeta"><span>Loading...</span></div><p>This note's full content would be loaded from the server. The in-app reader renders PDFs and documents beautifully for studying on any device.</p><div class="callout"><p>💡 Use the AI tools below to generate flashcards, short notes, or a mind map from this content.</p></div>`
+};
+
+function openReader(id){
+  const n=NOTES.find(x=>x.id===id);
+  if(!n)return;
+  currentNoteId=id;
+  document.getElementById('reader-title').textContent=n.title;
+  document.getElementById('reader-content').innerHTML=NOTE_CONTENT[id]||NOTE_CONTENT.default.replace('Note Content',n.title);
+  document.getElementById('reader-toc').innerHTML=`
+    <div class="toc-item">Entity-Relationship Model</div>
+    <div class="toc-item h3">What is an ER Diagram?</div>
+    <div class="toc-item h3">Key Components</div>
+    <div class="toc-item">Normalization</div>
+    <div class="toc-item h3">1NF, 2NF, 3NF</div>
+    <div class="toc-item">SQL Fundamentals</div>
+    <div class="toc-item h3">DDL & DML Commands</div>
+    <div class="toc-item h3">Joins</div>`;
+  document.getElementById('reader-info').innerHTML=`
+    <div>📚 ${n.subject} · Sem ${n.sem}</div>
+    <div>📄 ${n.pages} pages · ${n.unit}</div>
+    <div>👤 ${n.author} ${roleBadgeHTML(n.role)}</div>
+    <div>↓ ${n.downloads} downloads · ♡ ${n.saves} saves</div>`;
+  document.getElementById('reader-rating-stars').innerHTML=[1,2,3,4,5].map(i=>
+    `<span onclick="openRateModalFor(${id})" style="font-size:22px;cursor:pointer;color:${i<=Math.round(n.rating)?'var(--gold)':'var(--border2)'};">★</span>`
+  ).join('');
+  renderIssues(id);
+  document.getElementById('reader-shell').classList.add('open');
+}
+
+function renderIssues(noteId) {
+  const issues = NOTE_ISSUES[noteId] || [];
+  const openCount = issues.filter(i=>i.status==='open'||i.status==='ai').length;
+  document.getElementById('issue-count-badge').textContent = openCount > 0 ? `${openCount} open` : `${issues.length} total`;
+  if(!issues.length){
+    document.getElementById('reader-issues-list').innerHTML=`<div style="font-size:11px;color:var(--text3);text-align:center;padding:8px;">No issues reported ✓</div>`;
+    return;
+  }
+  document.getElementById('reader-issues-list').innerHTML=issues.map(issue=>{
+    const statusMap={open:'is-open',ai:'is-ai',resolved:'is-resolved',escalated:'is-escalated'};
+    const statusLabel={open:'Open',ai:'AI Replied',resolved:'Resolved',escalated:'Escalated'};
+    const replyClass = issue.reply ? (issue.reply.who==='ai'?'':'issue.reply.who==="teacher"?"teacher-reply":"student-reply"') : '';
+    let replyHTML='';
+    if(issue.reply){
+      const who = issue.reply.who==='ai'?'🤖 AI':issue.reply.who==='teacher'?'👩‍🏫 Teacher':'🎓 Student';
+      const cls = issue.reply.who==='teacher'?'teacher-reply':issue.reply.who==='student'?'student-reply':'';
+      replyHTML=`<div class="issue-reply ${cls}" style="margin-top:5px;"><strong>${who}:</strong> ${issue.reply.text}</div>`;
+    }
+    return `<div class="issue-item ${issue.status==='resolved'?'resolved':issue.status==='escalated'?'escalated':''}">
+      <div class="issue-meta">
+        <span class="issue-status ${statusMap[issue.status]}">${statusLabel[issue.status]}</span>
+        <span class="issue-author-time">${issue.author} · ${issue.time}</span>
+      </div>
+      <div class="issue-text">${issue.text}</div>
+      ${replyHTML}
+    </div>`;
+  }).join('');
+}
+
+function closeReader(){
+  document.getElementById('reader-shell').classList.remove('open');
+  closeAI();
+}
+
+// ═══ ISSUE MODAL ═══
+function openIssueModal(){
+  document.getElementById('issue-desc').value='';
+  document.getElementById('issue-page').value='';
+  document.getElementById('issue-modal').classList.add('open');
+}
+function closeIssueModal(){document.getElementById('issue-modal').classList.remove('open');}
+function setIssueType(el,type){
+  document.querySelectorAll('#issue-modal .fc').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  currentIssueType=type;
+}
+function submitIssue(){
+  const desc=document.getElementById('issue-desc').value.trim();
+  if(!desc){toast('⚠️ Please describe the issue');return;}
+  closeIssueModal();
+  toast('⚑ Issue submitted! Students & AI will be notified.');
+  // Add to issues list
+  if(currentNoteId){
+    if(!NOTE_ISSUES[currentNoteId]) NOTE_ISSUES[currentNoteId]=[];
+    NOTE_ISSUES[currentNoteId].unshift({id:Date.now(),type:currentIssueType,text:desc,author:'Rahul S.',time:'Just now',status:'open',reply:null});
+    renderIssues(currentNoteId);
+  }
+}
+
+// ═══ AI TOOLS ═══
+const AI_CONTENT={
+  flashcard:{title:'🃏 AI Flashcards',
+    cards:[
+      {q:'What is the purpose of an ER Diagram?',a:'To visually represent data entities, their attributes, and relationships before implementing the database schema.'},
+      {q:'Define First Normal Form (1NF)',a:'A table is in 1NF if it contains only atomic (indivisible) values, with no repeating groups, and each row is unique.'},
+      {q:'What is a Partial Dependency?',a:'When a non-key attribute depends on only part of a composite primary key. Eliminated in 2NF.'},
+      {q:'Difference between DELETE and TRUNCATE',a:'DELETE removes specific rows (can be rolled back, triggers fire). TRUNCATE removes all rows (faster, cannot be rolled back, resets identity).'},
+      {q:'What is a FOREIGN KEY?',a:'A field in one table that references the PRIMARY KEY of another table, enforcing referential integrity between tables.'},
+      {q:'What does BCNF stand for?',a:'Boyce-Codd Normal Form — a stronger version of 3NF where every determinant must be a candidate key.'},
+    ]
+  },
+  shortnotes:{title:'📝 AI Short Notes',
+    sections:[
+      {head:'ER Model',bullets:['Entities = real-world objects (Student, Course)','Attributes = properties of entities','Relationships define how entities interact','Cardinality: 1:1, 1:N, M:N']},
+      {head:'Normalization Quick Reference',bullets:['1NF → Atomic values only, no repeating groups','2NF → 1NF + no partial dependencies','3NF → 2NF + no transitive dependencies','BCNF → every determinant is a candidate key']},
+      {head:'SQL Must-Know Commands',bullets:['DDL: CREATE, ALTER, DROP, TRUNCATE','DML: SELECT, INSERT, UPDATE, DELETE','Joins: INNER, LEFT, RIGHT, FULL OUTER','Aggregate: COUNT, SUM, AVG, MAX, MIN']},
+      {head:'Exam Tips',bullets:['ER diagrams = 10 marks guaranteed','Normalization steps asked every year','Write SQL queries step by step','Practice converting ER to relational schema']},
+    ]
+  },
+  mindmap:{title:'🧠 AI Mind Map',svg:true}
+};
+
+let fcIdx=0,fcFlipped=false;
+function openAI(type){
+  if(!isPro){showPaywall(type);return;}
+  const panel=document.getElementById('ai-panel');
+  const body=document.getElementById('ai-panel-body');
+  const title=document.getElementById('ai-panel-title');
+  panel.classList.add('open');
+  body.innerHTML=`<div class="ai-loading"><div class="ai-spinner"></div><div style="font-size:13px;color:var(--text3);">Generating with Claude AI...</div></div>`;
+  title.textContent=AI_CONTENT[type].title;
+  setTimeout(()=>{
+    if(type==='flashcard')renderFlashcards(body);
+    else if(type==='shortnotes')renderShortNotes(body);
+    else if(type==='mindmap')renderMindMap(body);
+  },1400);
+}
+function closeAI(){document.getElementById('ai-panel').classList.remove('open');}
+
+function renderFlashcards(body){
+  fcIdx=0;fcFlipped=false;
+  const cards=AI_CONTENT.flashcard.cards;
+  body.innerHTML=`
+    <div class="fc-hint">Tap card to reveal answer · ${cards.length} cards total</div>
+    <div class="flashcard-wrap">
+      <div class="flashcard" id="fc-card" onclick="flipCard()">
+        <div class="fc-face fc-front" id="fc-front">${cards[0].q}</div>
+        <div class="fc-face fc-back" id="fc-back">${cards[0].a}</div>
+      </div>
+    </div>
+    <div class="fc-nav">
+      <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;" onclick="prevCard()">← Prev</button>
+      <div class="fc-counter" id="fc-counter">1 / ${cards.length}</div>
+      <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;" onclick="nextCard()">Next →</button>
+    </div>
+    <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:14px;">
+      <div style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">All Cards</div>
+      ${cards.map((c,i)=>`<div style="padding:8px;background:var(--bg3);border-radius:7px;margin-bottom:6px;cursor:pointer;font-size:12px;color:var(--text2);border:1px solid var(--border);" onclick="jumpCard(${i})">${i+1}. ${c.q}</div>`).join('')}
+    </div>`;
+}
+function flipCard(){fcFlipped=!fcFlipped;document.getElementById('fc-card').classList.toggle('flipped',fcFlipped);}
+function nextCard(){const c=AI_CONTENT.flashcard.cards;fcIdx=(fcIdx+1)%c.length;updateCard();}
+function prevCard(){const c=AI_CONTENT.flashcard.cards;fcIdx=(fcIdx-1+c.length)%c.length;updateCard();}
+function jumpCard(i){fcIdx=i;updateCard();}
+function updateCard(){
+  const cards=AI_CONTENT.flashcard.cards;
+  fcFlipped=false;
+  document.getElementById('fc-card').classList.remove('flipped');
+  document.getElementById('fc-front').textContent=cards[fcIdx].q;
+  document.getElementById('fc-back').textContent=cards[fcIdx].a;
+  document.getElementById('fc-counter').textContent=`${fcIdx+1} / ${cards.length}`;
+}
+
+function renderShortNotes(body){
+  const secs=AI_CONTENT.shortnotes.sections;
+  body.innerHTML=secs.map(s=>`
+    <div class="short-note-section">
+      <div class="sn-head">${s.head}</div>
+      ${s.bullets.map(b=>`<div class="sn-bullet"><div class="sn-dot"></div><div>${b}</div></div>`).join('')}
+    </div>`).join('<div style="height:1px;background:var(--border);margin:14px 0;"></div>');
+}
+
+function renderMindMap(body){
+  body.innerHTML=`
+    <div style="font-size:11px;color:var(--text3);margin-bottom:12px;font-family:var(--mono);">DBMS — Visual Concept Map</div>
+    <div class="mindmap-container">
+      <svg viewBox="0 0 360 320" width="360" height="320" style="font-family:var(--sans);display:block;margin:0 auto;">
+        <ellipse cx="180" cy="160" rx="50" ry="26" fill="var(--accent-bg)" stroke="var(--accent)" stroke-width="1.5"/>
+        <text x="180" y="164" text-anchor="middle" fill="var(--accent)" font-size="12" font-weight="500">DBMS</text>
+        <line x1="132" y1="148" x2="62" y2="90" stroke="var(--amber)" stroke-width="1.2" stroke-dasharray="4,2"/>
+        <rect x="10" y="68" width="80" height="26" rx="6" fill="var(--amber-bg)" stroke="var(--amber)" stroke-width="1"/>
+        <text x="50" y="85" text-anchor="middle" fill="var(--amber)" font-size="11">ER Model</text>
+        <line x1="228" y1="148" x2="298" y2="90" stroke="var(--green)" stroke-width="1.2" stroke-dasharray="4,2"/>
+        <rect x="270" y="68" width="82" height="26" rx="6" fill="var(--green-bg)" stroke="var(--green)" stroke-width="1"/>
+        <text x="311" y="85" text-anchor="middle" fill="var(--green)" font-size="11">Normal Forms</text>
+        <line x1="180" y1="186" x2="180" y2="238" stroke="var(--teal)" stroke-width="1.2" stroke-dasharray="4,2"/>
+        <rect x="138" y="238" width="84" height="26" rx="6" fill="var(--teal-bg)" stroke="var(--teal)" stroke-width="1"/>
+        <text x="180" y="255" text-anchor="middle" fill="var(--teal)" font-size="11">SQL</text>
+        <line x1="138" y1="170" x2="62" y2="220" stroke="var(--purple)" stroke-width="1.2" stroke-dasharray="4,2"/>
+        <rect x="10" y="210" width="84" height="26" rx="6" fill="var(--purple-bg)" stroke="var(--purple)" stroke-width="1"/>
+        <text x="52" y="227" text-anchor="middle" fill="var(--purple)" font-size="11">Transactions</text>
+        <line x1="222" y1="170" x2="300" y2="218" stroke="var(--rose)" stroke-width="1.2" stroke-dasharray="4,2"/>
+        <rect x="270" y="208" width="80" height="26" rx="6" fill="var(--rose-bg)" stroke="var(--rose)" stroke-width="1"/>
+        <text x="310" y="225" text-anchor="middle" fill="var(--rose)" font-size="11">Indexing</text>
+      </svg>
+    </div>
+    <div style="margin-top:14px;background:var(--bg3);border-radius:8px;padding:10px 12px;border:1px solid var(--border);">
+      <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;">LEGEND</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <span style="font-size:11px;color:var(--amber);">● ER Model</span>
+        <span style="font-size:11px;color:var(--green);">● Normal Forms</span>
+        <span style="font-size:11px;color:var(--teal);">● SQL</span>
+        <span style="font-size:11px;color:var(--purple);">● Transactions</span>
+        <span style="font-size:11px;color:var(--rose);">● Indexing</span>
+      </div>
+    </div>`;
+}
+
+// ═══ PAYWALL ═══
+function showPaywall(type){document.getElementById('paywall-overlay').classList.add('open');}
+function closePaywall(){document.getElementById('paywall-overlay').classList.remove('open');}
+function selectPlan(el,cycle){
+  document.querySelectorAll('.plan-card').forEach(c=>c.classList.remove('highlight'));
+  el.classList.add('highlight');
+}
+function activatePro(){
+  isPro=true;
+  closePaywall();
+  toast('🎉 Welcome to Pro! AI tools are now unlocked.');
+  document.querySelectorAll('.ai-tool-btn').forEach(b=>{b.classList.add('pro');b.classList.remove('free');});
+  document.querySelectorAll('.pro-lock').forEach(l=>l.remove());
+}
+
+// ═══ RATING ═══
+let currentRateNoteId=null;
+function openRateModal(){if(currentNoteId)openRateModalFor(currentNoteId);}
+function openRateModalFor(id){
+  const n=NOTES.find(x=>x.id===id);
+  if(!n)return;
+  currentRateNoteId=id;
+  document.getElementById('rate-note-title').textContent=n.title;
+  document.getElementById('rate-label').textContent='Tap a star to rate';
+  document.querySelectorAll('#rate-stars .rate-star').forEach(s=>s.classList.replace('sel','unsel'));
+  document.getElementById('rate-comment').value='';
+  document.getElementById('rate-modal').classList.add('open');
+}
+function closeRateModal(){document.getElementById('rate-modal').classList.remove('open');}
+function hoverRate(n){
+  document.querySelectorAll('#rate-stars .rate-star').forEach((s,i)=>{s.style.color=i<n?'var(--gold)':'var(--border2)';});
+  const labels=['','Poor','Fair','Good','Very Good','Excellent'];
+  document.getElementById('rate-label').textContent=labels[n];
+}
+function unhoverRate(){
+  document.querySelectorAll('#rate-stars .rate-star').forEach(s=>s.style.color='');
+  document.getElementById('rate-label').textContent='Tap a star to rate';
+}
+function submitRate(n){hoverRate(n);setTimeout(()=>{closeRateModal();toast('⭐ Thanks for your rating!');},300);}
+
+// ═══ PRICING ═══
+function setBilling(el,cycle){
+  document.querySelectorAll('.pt-opt').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');billingCycle=cycle;
+  if(cycle==='yearly'){
+    document.getElementById('pro-price').textContent='₹59';
+    document.getElementById('pro-period').textContent='per month, billed ₹708/yr';
+    document.getElementById('campus-price').textContent='₹599';
+    document.getElementById('campus-period').textContent='per month · 10 seats, billed yearly';
+  }else{
+    document.getElementById('pro-price').textContent='₹99';
+    document.getElementById('pro-period').textContent='per month';
+    document.getElementById('campus-price').textContent='₹999';
+    document.getElementById('campus-period').textContent='per month · 10 seats';
+  }
+}
+function toggleFaq(el){
+  const ans=el.nextElementSibling;
+  const isOpen=ans.classList.contains('open');
+  document.querySelectorAll('.faq-a').forEach(a=>a.classList.remove('open'));
+  document.querySelectorAll('.faq-q span:last-child').forEach(s=>s.textContent='+');
+  if(!isOpen){ans.classList.add('open');el.querySelector('span:last-child').textContent='−';}
+}
+
+// ═══ MISC ═══
+function openUploadModal(){document.getElementById('upload-modal').classList.add('open');}
+function closeUploadModal(){document.getElementById('upload-modal').classList.remove('open');}
+function selSubj(el){document.querySelectorAll('.subj-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
+function selectRole(el,role){
+  const parent=el.parentElement;
+  parent.querySelectorAll('.role-opt').forEach(r=>r.classList.remove('active'));
+  el.classList.add('active');
+}
+function doUpload(){closeUploadModal();toast('🎉 Notes uploaded! +50 points earned');}
+
+let toastTimer;
+function toast(msg){
+  clearTimeout(toastTimer);
+  const t=document.getElementById('toast');
+  const m=msg.match(/^([\S]{1,2})\s(.*)/)||['','',msg];
+  document.getElementById('toast-icon').textContent=m[1]&&/[^\w]/.test(m[1])?m[1]:'';
+  document.getElementById('toast-text').textContent=m[1]&&/[^\w]/.test(m[1])?m[2]:msg;
+  t.classList.add('show');
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// INIT — start on Browse, not Dashboard
+renderAll();
+renderLeaderboard();
+</script>
+</body>
+</html>
